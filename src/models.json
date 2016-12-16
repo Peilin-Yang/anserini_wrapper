@@ -1,0 +1,23 @@
+[
+  {
+    "year": 2001,
+    "paper": "C. Zhai and J. Lafferty. A study of smoothingmethods for language models applied to ad hoc information retrieval.",
+    "name": "ql",
+    "formal_name": "DIR",
+    "paras": 
+    {
+      "mu": [0, 10000, 250]
+    }
+  },
+  {
+    "year": 1994,
+    "paper": "Okapi at trec-3",
+    "name": "bm25",
+    "formal_name": "BM25",
+    "paras": 
+    {
+      "k1": [0.1, 4.0, 0.1],
+      "b": [0, 1.0, 0.05]
+    }
+  }
+]
