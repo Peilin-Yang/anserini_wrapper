@@ -89,13 +89,13 @@ def gen_run_query_batch():
                     this_output_root = os.path.join(output_root, index_path)
                     if not os.path.exists(this_output_root):
                         os.makedirs(this_output_root)
-                    for para in models:
+                    for para in model_paras:
                         this_para = (
                             program, 
                             '-topicreader', c['topic_reader'], 
                             '-index', index_path, 
                             '-topics', ' '.join([os.path.join(anserini_root, '/src/main/resources/topics-and-qrels/', t) for t in c['topic_files']]),
-                            model_paras[0],
+                            para.split(),
                             '-output', os.path.join(this_output_root, model_paras[1]),
                             '-eval', '-qrels', ' '.join([os.path.join(anserini_root, '/src/main/resources/topics-and-qrels/', t) for t in c['qrels']]),
                             '-evalo', os.path.join(this_output_root, model_paras[2]),
