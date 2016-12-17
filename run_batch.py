@@ -97,7 +97,8 @@ def gen_run_query_batch():
                             '-topics', ' '.join([os.path.join(anserini_root, 'src/main/resources/topics-and-qrels/', t) for t in c['topic_files']]),
                             para[0],
                             '-output', os.path.join(this_output_root, para[1]),
-                            '-eval', '-evalq' '-qrels', ' '.join([os.path.join(anserini_root, 'src/main/resources/topics-and-qrels/', t) for t in c['qrels']]),
+                            '-eval', '-evalq', '-qrels', 
+                            ' '.join([os.path.join(anserini_root, 'src/main/resources/topics-and-qrels/', t) for t in c['qrels']]),
                             '-evalo', os.path.join(this_output_root, para[2]),
                         )
                         all_paras.append(this_para)
