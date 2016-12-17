@@ -83,12 +83,12 @@ def gen_run_query_batch():
         with open('collections.json') as cf:
             for c in json.load(cf):
                 collection_name = c['collection']
+                this_output_root = os.path.join(output_root, collection_name)
+                if not os.path.exists(this_output_root):
+                    os.makedirs(this_output_root)
                 for suffix in collection_suffix:
                     index_path = os.path.join(index_root, collection_name+suffix)
                     model_paras = Search(index_path).gen_run_batch_paras(methods)
-                    this_output_root = os.path.join(output_root, index_path)
-                    if not os.path.exists(this_output_root):
-                        os.makedirs(this_output_root)
                     for para in model_paras:
                         this_para = (
                             program, 
