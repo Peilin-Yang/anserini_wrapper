@@ -100,7 +100,7 @@ def gen_run_query_batch():
                             '-eval', '-qrels', ' '.join([os.path.join(anserini_root, '/src/main/resources/topics-and-qrels/', t) for t in c['qrels']]),
                             '-evalo', os.path.join(this_output_root, para[2]),
                         )
-                        print this_para
+                        print ' '.join(this_para)
                         exit()
                         all_paras.append(this_para)
 
