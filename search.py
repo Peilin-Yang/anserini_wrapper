@@ -28,7 +28,7 @@ class Search(object):
             os.makedirs(os.path.join(output_root, self.eval_files_root))
         for m in methods:
             if 'paras' in m:
-                for p in itertools.product(*[np.arange(ele[0], ele[1], ele[2]).tolist() for ele in m['paras'].values()]):
+                for p in itertools.product(*[np.arange(ele[0], ele[1]+1e-8, ele[2]).tolist() for ele in m['paras'].values()]):
                     para_str = '-%s' % m['name']
                     rfn = m['name']+'-'
                     for k_idx, k in enumerate(m['paras'].keys()):
