@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys,os
 import itertools
+from inspect import currentframe, getframeinfo
 from subprocess import Popen, PIPE
 import numpy as np
 
