@@ -100,21 +100,14 @@ def gen_run_query_batch():
                             '-eval', '-qrels', ' '.join([os.path.join(anserini_root, 'src/main/resources/topics-and-qrels/', t) for t in c['qrels']]),
                             '-evalo', os.path.join(this_output_root, para[2]),
                         )
-                        print ' '.join(this_para)
-                        exit()
                         all_paras.append(this_para)
-
-    print all_paras
-    #gen_batch_framework('run_anserini_queries', 'b2', all_paras)
+    gen_batch_framework('run_anserini_queries', 'b2', all_paras)
 
 def run_query_atom(para_file):
     with open(para_file) as f:
         reader = csv.reader(f)
         for row in reader:
-            query_fn = row[0]
-            query_para = row[1]
-            output_fn = row[2]
-            run_query(query_fn, query_para, output_fn)
+            subprocess.call(' '.join(row), shell=True)
             
 def run_query(query_fn, query_para, output_fn):
     p = Popen(['IndriRunQuery_EX', query_fn, query_para], stdout=PIPE, stderr=PIPE)
