@@ -94,10 +94,10 @@ def gen_run_query_batch():
                             program, 
                             '-topicreader', c['topic_reader'], 
                             '-index', index_path, 
-                            '-topics', ' '.join([os.path.join(anserini_root, '/src/main/resources/topics-and-qrels/', t) for t in c['topic_files']]),
+                            '-topics', ' '.join([os.path.join(anserini_root, 'src/main/resources/topics-and-qrels/', t) for t in c['topic_files']]),
                             para[0],
                             '-output', os.path.join(this_output_root, para[1]),
-                            '-eval', '-qrels', ' '.join([os.path.join(anserini_root, '/src/main/resources/topics-and-qrels/', t) for t in c['qrels']]),
+                            '-eval', '-qrels', ' '.join([os.path.join(anserini_root, 'src/main/resources/topics-and-qrels/', t) for t in c['qrels']]),
                             '-evalo', os.path.join(this_output_root, para[2]),
                         )
                         print ' '.join(this_para)
