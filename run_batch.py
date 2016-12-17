@@ -14,7 +14,11 @@ import inspect
 import ArrayJob
 from search import Search
 
-_root = '/lustre/scratch/franklyn/reproduce/collections_lucene/'
+anserini_root = '/home/1471/usr/Anserini/'
+index_root = '/lustre/scratch/franklyn/reproduce/collections_lucene/'
+output_root = '/lustre/scratch/franklyn/anserini_wrapper/all_results/'
+if not os.path.exists(output_root):
+    os.makedirs(output_root)
 
 def gen_batch_framework(para_label, batch_pythonscript_para, all_paras, \
         quote_command=False, memory='2G', max_task_per_node=50000, num_task_per_node=50):
@@ -72,6 +76,7 @@ def gen_batch_framework(para_label, batch_pythonscript_para, all_paras, \
 
 def gen_run_query_batch():
     all_paras = []
+    program = os.path.join(anserini_root, 'target/appassembler/bin/SearchWebCollection')
     collection_suffix = ['_nostopwords']
     with open('models.json') as mf:
         methods = json.load(mf)
@@ -79,11 +84,28 @@ def gen_run_query_batch():
             for c in json.load(cf):
                 collection_name = c['collection']
                 for suffix in collection_suffix:
-                    collection_path = os.path.join(_root, collection_name+suffix)
-                    all_paras.extend(Search(collection_path).gen_run_batch_paras(methods))
+                    index_path = os.path.join(index_root, collection_name+suffix)
+                    model_paras = Search(index_path).gen_run_batch_paras(methods)
+                    this_output_root = os.path.join(output_root, index_path)
+                    if not os.path.exists(this_output_root):
+                        os.makedirs(this_output_root)
+                    for para in models:
+                        this_para = (
+                            program, 
+                            '-topicreader', c['topic_reader'], 
+                            '-index', index_path, 
+                            '-topics', ' '.join([os.path.join(anserini_root, '/src/main/resources/topics-and-qrels/', t) for t in c['topic_files']]),
+                            model_paras[0],
+                            '-output', os.path.join(this_output_root, model_paras[1]),
+                            '-eval', '-qrels', ' '.join([os.path.join(anserini_root, '/src/main/resources/topics-and-qrels/', t) for t in c['qrels']]),
+                            '-evalo', os.path.join(this_output_root, model_paras[2]),
+                        )
+                        print this_para
+                        exit()
+                        all_paras.append(this_para)
 
     print all_paras
-    #gen_batch_framework('run_split_queries', 'b2', all_paras)
+    #gen_batch_framework('run_anserini_queries', 'b2', all_paras)
 
 def run_query_atom(para_file):
     with open(para_file) as f:

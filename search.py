@@ -9,21 +9,19 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 class Search(object):
-    def __init__(self, collection_path):
-        self.corpus_path = os.path.abspath(collection_path)
-        if not os.path.exists(self.corpus_path):
+    def __init__(self, index_path):
+        self.index_path = os.path.abspath(index_path)
+        if not os.path.exists(self.index_path):
             frameinfo = getframeinfo(currentframe())
             print frameinfo.filename, frameinfo.lineno
-            print '[Evaluation Constructor]:Please provide a valid corpus path'
+            print '[Search Constructor]:Please provide a valid index path'
             exit(1)
 
-        self.run_files_root = os.path.join(self.corpus_path, 'run_files')
+        self.run_files_root = 'run_files'
+        self.eval_files_root = 'eval_files'
 
     def gen_run_batch_paras(self, methods):
         all_paras = []
-        if not os.path.exists(self.run_files_root):
-            os.makedirs(self.run_files_root)
-
         for m in methods:
             if 'paras' in m:
                 for p in itertools.product(*[np.arange(ele[0], ele[1], ele[2]).tolist() for ele in m['paras'].values()]):
@@ -35,13 +33,15 @@ class Search(object):
                             rfn += ','
                         rfn += '%s:%s' % (k, p[k_idx])
                     results_fn = os.path.join(self.run_files_root, rfn)
+                    eval_fn = os.path.join(self.eval_files_root, rfn)
                     if not os.path.exists(results_fn):
-                        all_paras.append( (para_str, results_fn) )
+                        all_paras.append( (para_str, results_fn, eval_fn) )
             else:
                 para_str = '-%s' % m['name']
                 results_fn = os.path.join(self.run_files_root, m['name'])
+                eval_fn = os.path.join(self.eval_files_root, m['name'])
                 if not os.path.exists(results_fn):
-                    all_paras.append( (para_str, results_fn) )
+                    all_paras.append( (para_str, results_fn, eval_fn) )
             
         return all_paras
         
