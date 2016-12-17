@@ -26,7 +26,7 @@ class Search(object):
 
         for m in methods:
             if 'paras' in m:
-                print [np.arange(ele[0], ele[1], ele[2]) for ele in m['paras'].values()]
+                print *[np.arange(ele[0], ele[1], ele[2]).tolist() for ele in m['paras'].values()]
                 print '-'*40
                 for p in itertools.product(*[np.arange(ele[0], ele[1], ele[2]).tolist() for ele in m['paras'].values()]):
                     para_str = '-%s' % m['name']
