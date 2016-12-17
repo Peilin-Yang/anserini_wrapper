@@ -14,7 +14,7 @@ import inspect
 import ArrayJob
 from search import Search
 
-_root = '../collections/'
+_root = '/lustre/scratch/franklyn/reproduce/collections_lucene/'
 
 def gen_batch_framework(para_label, batch_pythonscript_para, all_paras, \
         quote_command=False, memory='2G', max_task_per_node=50000, num_task_per_node=50):
@@ -72,13 +72,15 @@ def gen_batch_framework(para_label, batch_pythonscript_para, all_paras, \
 
 def gen_run_query_batch():
     all_paras = []
+    collection_suffix = ['_nostopwords']
     with open('models.json') as mf:
         methods = json.load(mf)
         with open('collections.json') as cf:
             for c in json.load(cf):
                 collection_name = c['collection']
-                collection_path = os.path.join(_root, collection_name)
-                all_paras.extend(Search(collection_path).gen_run_batch_paras(methods))
+                for suffix in collection_suffix:
+                    collection_path = os.path.join(_root, collection_name+suffix)
+                    all_paras.extend(Search(collection_path).gen_run_batch_paras(methods))
 
     print all_paras
     #gen_batch_framework('run_split_queries', 'b2', all_paras)
