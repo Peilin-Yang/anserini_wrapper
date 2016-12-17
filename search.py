@@ -37,11 +37,13 @@ class Search(object):
                             rfn += ','
                         rfn += '%s:%s' % (k, p[k_idx])
                     results_fn = os.path.join(self.run_files_root, rfn)
+                    if not os.path.exists(results_fn):
+                        all_paras.append( (para_str, results_fn) )
             else:
                 para_str = '-%s' % m['name']
                 results_fn = os.path.join(self.run_files_root, m['name'])
-
-            if not os.path.exists(results_fn):
-                all_paras.append( (para_str, results_fn) )
+                if not os.path.exists(results_fn):
+                    all_paras.append( (para_str, results_fn) )
+            
         return all_paras
         
