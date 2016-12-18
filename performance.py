@@ -23,7 +23,7 @@ class Performances(object):
         if not os.path.exists(self.index_path):
             frameinfo = getframeinfo(currentframe())
             print frameinfo.filename, frameinfo.lineno
-            print '[Search Constructor]:Please provide a valid index path'
+            print '[Performances Constructor]:Please provide a valid index path - ' + self.index_path
             exit(1)
 
         self.run_files_root = 'run_files'
