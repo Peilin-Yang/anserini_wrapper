@@ -111,7 +111,7 @@ def run_query_atom(para_file):
         for row in reader:
             subprocess.call(' '.join(row), shell=True)
 
-def gen_output_performances_batch(eval_method='map'):
+def gen_output_performances_batch():
     all_paras = []
     collection_suffix = ['_nostopwords']
     with open('collections.json') as cf:
@@ -122,6 +122,7 @@ def gen_output_performances_batch(eval_method='map'):
                 if not os.path.exists(this_output_root):
                     os.makedirs(this_output_root)
                 index_path = os.path.join(index_root, collection_name+suffix)
+                print index_path
                 all_paras.extend( Performances(index_path).gen_output_performances_paras(this_output_root) )
 
     #print all_paras
