@@ -30,6 +30,8 @@ class Performances(object):
         self.performances_root = 'performance_files'
 
     def gen_output_performances_paras(self, output_root):
+        if not os.path.exists(os.path.join(output_root, self.performances_root)):
+            os.makedirs(os.path.join(output_root, self.performances_root))
         all_paras = []
         all_results = {}
         for fn in os.listdir(os.path.join(output_root, self.eval_files_root)):
