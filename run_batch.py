@@ -144,6 +144,7 @@ def print_optimal_performances(metrics=['map']):
     #     with open('microblog_funcs.json') as f:
     #         methods.extend([m['name'] for m in json.load(f)['methods']])
 
+    print metrics
     collection_suffix = ['_nostopwords']
     with open('collections.json') as cf:
         for c in json.load(cf):
