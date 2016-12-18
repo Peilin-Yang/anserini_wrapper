@@ -103,6 +103,7 @@ class Performances(object):
             data[model_name] = []
             with open(os.path.join(performances_root, model_name)) as f:
                 all_performance = json.load(f)
+                print all_performance
                 for metric in metrics:
                     data[metric].append(model_name, all_performance[metric]['all']['max']['value'], all_performance[metric]['all']['max']['para'])
         return data
