@@ -79,7 +79,7 @@ class Performances(object):
         paras = split_fn[1] if len(split_fn) > 1 else ''
         res = {}
         with open(fn) as _in:
-            for line in f:
+            for line in _in:
                 line = line.strip()
                 if line:
                     row = line.split()

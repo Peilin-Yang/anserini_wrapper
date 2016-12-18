@@ -122,7 +122,6 @@ def gen_output_performances_batch():
                 if not os.path.exists(this_output_root):
                     os.makedirs(this_output_root)
                 index_path = os.path.join(index_root, collection_name+suffix)
-                print index_path
                 all_paras.extend( Performances(index_path).gen_output_performances_paras(this_output_root) )
 
     #print all_paras
