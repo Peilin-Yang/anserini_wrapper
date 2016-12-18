@@ -35,7 +35,7 @@ class Performances(object):
         all_results = {}
         for fn in os.listdir(os.path.join(output_root, self.eval_files_root)):
             model_name = fn.split('-')[0]
-            performace_fn = os.path.join(output_root, performances_root, model_name)
+            performace_fn = os.path.join(output_root, self.performances_root, model_name)
             if not os.path.exists(performace_fn):
                 method_paras = fn.split('-')[1] if len(fn.split('-')) > 1 else ''
                 if model_name not in all_results:
