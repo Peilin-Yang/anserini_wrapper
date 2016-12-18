@@ -18,45 +18,33 @@ class Performances(object):
     Handle the performace. For example, get all the performances of one method(has multiple parameters).
     When constructing, pass the path of the corpus. For example, "../wt2g/"
     """
-    def __init__(self, collection_path):
-        self.corpus_path = os.path.abspath(collection_path)
-        if not os.path.exists(self.corpus_path):
+    def __init__(self, index_path):
+        self.index_path = os.path.abspath(index_path)
+        if not os.path.exists(self.index_path):
             frameinfo = getframeinfo(currentframe())
             print frameinfo.filename, frameinfo.lineno
-            print '[Evaluation Constructor]:Please provide a valid corpus path'
+            print '[Search Constructor]:Please provide a valid index path'
             exit(1)
 
-        self.evaluation_results_root = os.path.join(self.corpus_path, 'evals')
-        self.mb_decay_eval_results_root = os.path.join(self.corpus_path, 'evals_mb_decay')
-        self.mb_combine_eval_results_root = os.path.join(self.corpus_path, 'evals_mb_combine')
-        self.performances_root = os.path.join(self.corpus_path, 'performances')
-        if not os.path.exists(self.performances_root):
-            os.makedirs(self.performances_root)
+        self.run_files_root = 'run_files'
+        self.eval_files_root = 'eval_files'
+        self.performances_root = 'performance_files'
 
-    def gen_output_performances_paras(self):
+    def gen_output_performances_paras(self, output_root):
         all_paras = []
         all_results = {}
-        all_folders = [self.evaluation_results_root, self.mb_decay_eval_results_root, self.mb_combine_eval_results_root]
-        for folder in all_folders:
-            if os.path.exists( folder ):
-                for fn in os.listdir(folder):
-                    query_part = fn.split('-')[0]
-                    method_paras = '-'.join(fn.split('-')[1:])
-                    method_paras_split = method_paras.split(',')
-                    method_name = method_paras_split[0].split(':')[1]
-                    if 'perturb' in method_name:
-                        method_paras_split = {ele.split(':')[0]:ele.split(':')[1] for ele in method_paras_split}
-                        label = query_part+'-'+method_name+'_'+method_paras_split['perturb_type']
-                    else:
-                        label = query_part+'-'+method_name
-                    compare_results_fn = os.path.join(self.performances_root, label)
-                    if label not in all_results:
-                        all_results[label] = []
-                    all_results[label].append( os.path.join(folder, fn) )
-                for label in all_results:
-                    tmp = [ self.corpus_path, os.path.join(self.performances_root, label) ]
-                    tmp.extend( all_results[label] )
-                    all_paras.append(tuple(tmp))
+        for fn in os.listdir(os.path.join(output_root, eval_files_root)):
+            model_name = fn.split('-')[0]
+            performace_fn = os.path.join(output_root, performances_root, model_name)
+            if not os.path.exists(performace_fn):
+                method_paras = fn.split('-')[1] if len(fn.split('-')) > 1 else ''
+                if model_name not in all_results:
+                    all_results[model_name] = []
+                all_results[model_name].append( os.path.join(output_root, eval_files_root, fn) )
+        for model_name in all_results:
+            tmp = [ model_name, performace_fn ]
+            tmp.extend( all_results[model_name] )
+            all_paras.append(tuple(tmp))
 
         return all_paras
 
@@ -118,7 +106,7 @@ class Performances(object):
             json.dump(final_results, o, indent=2, sort_keys=True)
 
 
-    def load_optimal_performance(self, evaluation_method='map', query_part='title'):
+    def load_optimal_performance(self, evaluation_method='map'):
         data = []
         for fn in os.listdir(self.performances_root):
             q_part = fn.split('-')[0]
@@ -131,7 +119,7 @@ class Performances(object):
                 data.append( (method_name, required['max']['value'], required['max']['para']) )
         return data
 
-    def print_optimal_performance(self, evaluation_method='map', query_part='title'):
+    def print_optimal_performance(self, evaluation_method=['map']):
         optimal_performances = self.load_optimal_performance(evaluation_method, query_part)
         optimal_performances.sort(key=itemgetter(0, 1, 2))
         for ele in optimal_performances:

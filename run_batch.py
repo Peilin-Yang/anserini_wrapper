@@ -13,6 +13,7 @@ import inspect
 
 import ArrayJob
 from search import Search
+from performance import Performances
 
 anserini_root = '/home/1471/usr/Anserini/'
 index_root = '/lustre/scratch/franklyn/reproduce/collections_lucene/'
@@ -109,45 +110,32 @@ def run_query_atom(para_file):
         reader = csv.reader(f)
         for row in reader:
             subprocess.call(' '.join(row), shell=True)
-            
-def run_query(query_fn, query_para, output_fn):
-    p = Popen(['IndriRunQuery_EX', query_fn, query_para], stdout=PIPE, stderr=PIPE)
-    stdout, stderr = p.communicate()
-    if 'exiting' not in stdout:
-        with open(output_fn, 'wb') as o:
-            o.write(stdout)
-    else:
-        print stdout, stderr
-        exit()
 
 def gen_output_performances_batch(eval_method='map'):
     all_paras = []
-    for q in g.query:
-        collection_name = q['collection']
-        collection_path = os.path.join(_root, collection_name)
-        all_paras.extend( performance.Performances(collection_path).gen_output_performances_paras() )
+    collection_suffix = ['_nostopwords']
+    with open('collections.json') as cf:
+        for c in json.load(cf):
+            collection_name = c['collection']
+            for suffix in collection_suffix:
+                this_output_root = os.path.join(output_root, collection_name+suffix)
+                if not os.path.exists(this_output_root):
+                    os.makedirs(this_output_root)
+                index_path = os.path.join(index_root, collection_name+suffix)
+    all_paras.extend( Performances(collection_path).gen_output_performances_paras(this_output_root) )
 
-    #print all_paras
-    gen_batch_framework('gen_performances', 'e2', all_paras)
+    print all_paras
+    #gen_batch_framework('gen_performances', 'e2', all_paras)
 
 
 def output_performances_atom(para_file):
     with open(para_file) as f:
         reader = csv.reader(f)
         for row in reader:
-            collection_path = row[0]
+            model_name = row[0]
             output_fn = row[1]
             input_fns = row[2:]
-            performance.Performances(collection_path).output_performances(output_fn, input_fns)
-
-def output_batch_evals(eval_method='map'):
-    with open('g.json') as f:
-        methods = [m['name'] for m in json.load(f)['methods']]
-    for q in g.query:
-        collection_name = q['collection']
-        collection_path = os.path.join(_root, collection_name)
-        for q in q['qf_parts']:
-            performance.Performances(collection_path).output_evaluation_results(methods, eval_method, q)
+            Performances(collection_path).output_performances(output_fn, input_fns)
 
 def output_the_optimal_performances(eval_method='map'):
     # with open('g.json') as f:
@@ -165,7 +153,7 @@ def output_the_optimal_performances(eval_method='map'):
         for q_part in q['qf_parts']:
             print q_part
             print '-'*30
-            performance.Performances(collection_path).print_optimal_performance(eval_method, q_part)
+            Performances(collection_path).print_optimal_performance(eval_method, q_part)
 
 def del_method_related_files(method_name):
     folders = ['split_results', 'merged_results', 'evals', 'performances']
@@ -201,10 +189,6 @@ if __name__ == '__main__':
     parser.add_argument("-del", "--del_method_related_files",
         nargs=1,
         help="Delete all the output files of a method.")
-
-    parser.add_argument("-output-evals", "--output_evals",
-        nargs=1,
-        help="Outputs all evals for the given methods. inputs: [evaluation_method]")
 
     parser.add_argument("-output-optimal", "--output_the_optimal_performances",
         nargs=1,
