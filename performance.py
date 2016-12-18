@@ -106,7 +106,7 @@ class Performances(object):
                 for metric in metrics:
                     if metric not in data:
                         data[metric] = []
-                    data[metric].append(model_name, all_performance[metric]['all']['max']['value'], all_performance[metric]['all']['max']['para'])
+                    data[metric].append((model_name, all_performance[metric]['all']['max']['value'], all_performance[metric]['all']['max']['para']))
         return data
 
     def print_optimal_performance(self, output_root, metrics=['map']):
@@ -114,7 +114,8 @@ class Performances(object):
         for metric in metrics:
             print metric
             print '-'*30
-            print ele[0], ele[1], ele[2]
+            for ele in optimal_performances[metric]:
+                print ele
 
 
 if __name__ == '__main__':
