@@ -95,23 +95,22 @@ class Performances(object):
 
         return res
 
-    def load_optimal_performance(self, evaluation_method='map'):
-        data = []
+    def load_optimal_performance(self, output_root, metrics=['map']):
+        data = {}
         for fn in os.listdir(self.performances_root):
-            q_part = fn.split('-')[0]
-            if q_part != query_part:
-                continue
-            method_name = fn.split('-')[1]
-            with open(os.path.join(self.performances_root, fn)) as pf:
-                all_performance = json.load(pf)
-                required = all_performance[evaluation_method]
-                data.append( (method_name, required['max']['value'], required['max']['para']) )
+            method_name = fn
+            data[method_name] = []
+            with open(os.path.join(output_root, self.performances_root, model_name)) as f:
+                all_performance = json.load(f)
+                for metric in metrics:
+                    data[metric].append(method_name, all_performance[metric]['all']['max']['value'], all_performance[metric]['all']['max']['para'])
         return data
 
-    def print_optimal_performance(self, evaluation_method=['map']):
-        optimal_performances = self.load_optimal_performance(evaluation_method, query_part)
-        optimal_performances.sort(key=itemgetter(0, 1, 2))
-        for ele in optimal_performances:
+    def print_optimal_performance(self, output_root, metrics=['map']):
+        optimal_performances = self.load_optimal_performance(output_root, metrics)
+        for metric in metrics:
+            print metric
+            print '-'*30
             print ele[0], ele[1], ele[2]
 
 

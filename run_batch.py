@@ -137,23 +137,24 @@ def output_performances_atom(para_file):
             input_fns = row[2:]
             Performances(index_path).output_performances(output_fn, input_fns)
 
-def output_the_optimal_performances(eval_method='map'):
+def print_optimal_performances(metrics=['map']):
     # with open('g.json') as f:
     #     methods = [m['name'] for m in json.load(f)['methods']]
     # if os.path.exists('microblog_funcs.json'):
     #     with open('microblog_funcs.json') as f:
     #         methods.extend([m['name'] for m in json.load(f)['methods']])
 
-    for q in g.query:
-        collection_name = q['collection']
-        collection_path = os.path.join(_root, collection_name)
-        print 
-        print collection_name
-        print '='*30
-        for q_part in q['qf_parts']:
-            print q_part
-            print '-'*30
-            Performances(collection_path).print_optimal_performance(eval_method, q_part)
+    collection_suffix = ['_nostopwords']
+    with open('collections.json') as cf:
+        for c in json.load(cf):
+            collection_name = c['collection']
+            for suffix in collection_suffix:
+                this_output_root = os.path.join(output_root, collection_name+suffix)
+                index_path = os.path.join(index_root, collection_name+suffix)
+                print 
+                print collection_name+suffix
+                print '='*30
+                Performances(index_path).print_optimal_performance(metrics)
 
 def del_method_related_files(method_name):
     folders = ['split_results', 'merged_results', 'evals', 'performances']
@@ -190,8 +191,8 @@ if __name__ == '__main__':
         nargs=1,
         help="Delete all the output files of a method.")
 
-    parser.add_argument("-output-optimal", "--output_the_optimal_performances",
-        nargs=1,
+    parser.add_argument("-print_optimal", "--print_optimal_performances",
+        nargs='+',
         help="inputs: [evaluation_method]") 
 
     args = parser.parse_args()
@@ -209,6 +210,6 @@ if __name__ == '__main__':
     if args.del_method_related_files:
         del_method_related_files(args.del_method_related_files[0])
 
-    if args.output_the_optimal_performances:
-        output_the_optimal_performances(args.output_the_optimal_performances[0])
+    if args.print_optimal_performances:
+        print_optimal_performances(args.print_optimal_performances)
 
