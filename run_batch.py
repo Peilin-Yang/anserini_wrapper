@@ -154,7 +154,7 @@ def print_optimal_performances(metrics=['map']):
                 print 
                 print collection_name+suffix
                 print '='*30
-                Performances(index_path).print_optimal_performance(metrics, this_output_root)
+                Performances(index_path).print_optimal_performance(this_output_root, metrics)
 
 def del_method_related_files(method_name):
     folders = ['split_results', 'merged_results', 'evals', 'performances']
