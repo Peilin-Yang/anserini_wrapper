@@ -99,12 +99,12 @@ class Performances(object):
         data = {}
         performances_root = os.path.join(output_root, self.performances_root)
         for fn in os.listdir(performances_root):
-            method_name = fn
-            data[method_name] = []
+            model_name = fn
+            data[model_name] = []
             with open(os.path.join(performances_root, model_name)) as f:
                 all_performance = json.load(f)
                 for metric in metrics:
-                    data[metric].append(method_name, all_performance[metric]['all']['max']['value'], all_performance[metric]['all']['max']['para'])
+                    data[metric].append(model_name, all_performance[metric]['all']['max']['value'], all_performance[metric]['all']['max']['para'])
         return data
 
     def print_optimal_performance(self, output_root, metrics=['map']):
