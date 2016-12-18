@@ -97,10 +97,11 @@ class Performances(object):
 
     def load_optimal_performance(self, output_root, metrics=['map']):
         data = {}
-        for fn in os.listdir(self.performances_root):
+        performances_root = os.path.join(output_root, self.performances_root)
+        for fn in os.listdir(performances_root):
             method_name = fn
             data[method_name] = []
-            with open(os.path.join(output_root, self.performances_root, model_name)) as f:
+            with open(os.path.join(performances_root, model_name)) as f:
                 all_performance = json.load(f)
                 for metric in metrics:
                     data[metric].append(method_name, all_performance[metric]['all']['max']['value'], all_performance[metric]['all']['max']['para'])
