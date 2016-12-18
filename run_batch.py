@@ -124,18 +124,19 @@ def gen_output_performances_batch(eval_method='map'):
                 index_path = os.path.join(index_root, collection_name+suffix)
                 all_paras.extend( Performances(index_path).gen_output_performances_paras(this_output_root) )
 
-    print all_paras
-    #gen_batch_framework('gen_performances', 'e2', all_paras)
+    #print all_paras
+    gen_batch_framework('gen_performances', 'e2', all_paras)
 
 
 def output_performances_atom(para_file):
     with open(para_file) as f:
         reader = csv.reader(f)
         for row in reader:
-            model_name = row[0]
-            output_fn = row[1]
-            input_fns = row[2:]
-            Performances(collection_path).output_performances(output_fn, input_fns)
+            index_path = row[0]
+            model_name = row[1]
+            output_fn = row[2]
+            input_fns = row[3:]
+            Performances(index_path).output_performances(output_fn, input_fns)
 
 def output_the_optimal_performances(eval_method='map'):
     # with open('g.json') as f:
