@@ -134,9 +134,8 @@ def output_performances_atom(para_file):
         reader = csv.reader(f)
         for row in reader:
             index_path = row[0]
-            model_name = row[1]
-            output_fn = row[2]
-            input_fns = row[3:]
+            output_fn = row[1]
+            input_fns = row[2:]
             Performances(index_path).output_performances(output_fn, input_fns)
 
 def output_the_optimal_performances(eval_method='map'):
