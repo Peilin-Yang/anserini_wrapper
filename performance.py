@@ -42,7 +42,8 @@ class Performances(object):
                     all_results[model_name] = []
                 all_results[model_name].append( os.path.join(output_root, self.eval_files_root, fn) )
         for model_name in all_results:
-            tmp = [ model_name, performace_fn ]
+            performace_fn = os.path.join(output_root, self.performances_root, model_name)
+            tmp = [ self.index_path, model_name, performace_fn ]
             tmp.extend( all_results[model_name] )
             all_paras.append(tuple(tmp))
 
