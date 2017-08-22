@@ -20,7 +20,7 @@ class Search(object):
         self.run_files_root = 'run_files'
         self.eval_files_root = 'eval_files'
 
-    def gen_run_batch_paras(self, methods, output_root):
+    def gen_run_batch_paras(self, topic_type, methods, output_root):
         all_paras = []
         if not os.path.exists(os.path.join(output_root, self.run_files_root)):
             os.makedirs(os.path.join(output_root, self.run_files_root))
@@ -36,14 +36,14 @@ class Search(object):
                         if k_idx != 0:
                             rfn += ','
                         rfn += '%s:%s' % (k, p[k_idx])
-                    results_fn = os.path.join(output_root, self.run_files_root, rfn)
-                    eval_fn = os.path.join(output_root, self.eval_files_root, rfn)
+                    results_fn = os.path.join(output_root, self.run_files_root, topic_type+'_'+rfn)
+                    eval_fn = os.path.join(output_root, self.eval_files_root, topic_type+'_'+rfn)
                     if not os.path.exists(results_fn) or not os.path.exists(eval_fn):
                         all_paras.append( (para_str, results_fn, eval_fn) )
             else:
                 para_str = '-%s' % m['name']
-                results_fn = os.path.join(self.run_files_root, m['name'])
-                eval_fn = os.path.join(self.eval_files_root, m['name'])
+                results_fn = os.path.join(self.run_files_root, topic_type+'_'+m['name'])
+                eval_fn = os.path.join(self.eval_files_root, topic_type+'_'+m['name'])
                 if not os.path.exists(results_fn) or not os.path.exists(eval_fn):
                     all_paras.append( (para_str, results_fn, eval_fn) )
             

@@ -89,11 +89,12 @@ def gen_run_query_batch():
                     if not os.path.exists(this_output_root):
                         os.makedirs(this_output_root)
                     index_path = os.path.join(index_root, collection_name+suffix)
-                    model_paras = Search(index_path).gen_run_batch_paras(methods, this_output_root)
+                    model_paras = Search(index_path).gen_run_batch_paras(c['topictype'], methods, this_output_root)
                     for para in model_paras:
                         this_para = (
                             program, 
-                            '-topicreader', c['topic_reader'], 
+                            '-topicreader', c['topic_reader'],
+                            '-topictype', c['topictype'],  
                             '-index', index_path, 
                             '-topics', ' '.join([os.path.join(anserini_root, 'src/main/resources/topics-and-qrels/', t) for t in c['topic_files']]),
                             para[0],

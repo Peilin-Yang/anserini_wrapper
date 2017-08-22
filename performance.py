@@ -35,17 +35,19 @@ class Performances(object):
         all_paras = []
         all_results = {}
         for fn in os.listdir(os.path.join(output_root, self.eval_files_root)):
-            model_name = fn.split('-')[0]
-            performace_fn = os.path.join(output_root, self.performances_root, model_name)
+            topic_type, model = fn.split('_')
+            model_name = model.split('-')[0]
+            performace_fn = os.path.join(output_root, self.performances_root, topic_type+'-'+model_name)
             if not os.path.exists(performace_fn):
-                method_paras = fn.split('-')[1] if len(fn.split('-')) > 1 else ''
-                if model_name not in all_results:
-                    all_results[model_name] = []
-                all_results[model_name].append( os.path.join(output_root, self.eval_files_root, fn) )
-        for model_name in all_results:
-            performace_fn = os.path.join(output_root, self.performances_root, model_name)
+                method_paras = model.split('-')[1] if len(model.split('-')) > 1 else ''
+                k = topic_type+'-'+model_name
+                if k not in all_results:
+                    all_results[k] = []
+                all_results[k].append( os.path.join(output_root, self.eval_files_root, fn) )
+        for k in all_results:
+            performace_fn = os.path.join(output_root, self.performances_root, k)
             tmp = [ self.index_path, performace_fn ]
-            tmp.extend( all_results[model_name] )
+            tmp.extend( all_results[k] )
             all_paras.append(tuple(tmp))
 
         return all_paras
