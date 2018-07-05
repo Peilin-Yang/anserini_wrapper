@@ -1,44 +1,51 @@
 [
   { 
     "collection": "disk12",
-    "collection_formal_name": "disk12",
-    "topic_files": ["topics.51-100.txt", "topics.101-150.txt", "topics.151-200.txt"],
+    "collection_formal_name": "Disk12",
+    "topic_files": ["topics.51-200.txt"],
     "topic_reader": "Trec",
-    "qrels": ["qrels.51-100.txt", "qrels.101-150.txt", "qrels.151-200.txt"]
+    "qrels": ["qrels.51-200.txt"]
   },
   { 
-    "collection": "disk45", 
-    "collection_formal_name": "disk45",
+    "collection": "robust04",
+    "collection_formal_name": "Diks45",
     "topic_files": ["topics.robust04.301-450.601-700.txt"],
     "topic_reader": "Trec",
-    "qrels": ["qrels.robust2004.txt"]
-  }, 
+    "qrels": ["qrels.701-850.txt"]
+  },
   { 
-    "collection": "aquaint", 
-    "collection_formal_name": "AQUAINT",
+    "collection": "aquaint",
+    "collection_formal_name": "Aquaint",
     "topic_files": ["topics.robust05.txt"],
     "topic_reader": "Trec",
-    "qrels": ["qrels.robust2005.txt"]
-  }, 
-  {
-    "collection": "wt2g",
-    "collection_formal_name": "WT2G",
-    "topic_files": ["topics.401-450.txt"],
-    "topic_reader": "Trec",
-    "qrels": ["qrels.401-450.txt"]
+    "qrels": ["qrels.701-850.txt"]
   },
-  {
-    "collection": "wt10g",
-    "collection_formal_name": "WT10G",
-    "topic_files": ["topics.451-550.txt"],
-    "topic_reader": "Trec",
-    "qrels": ["qrels.451-550.txt"]
-  },
-  {
+  { 
     "collection": "gov2",
-    "collection_formal_name": "GOV2",
-    "topic_files": ["topics.701-750.txt", "topics.751-800.txt", "topics.801-850.txt"],
+    "collection_formal_name": "Gov2",
+    "topic_files": ["topics.701-850.txt"],
     "topic_reader": "Trec",
-    "qrels": ["qrels.701-750.txt", "qrels.751-800.txt", "qrels.801-850.txt"]
+    "qrels": ["qrels.701-850.txt"]
+  },
+  { 
+    "collection": "cw09b",
+    "collection_formal_name": "ClueWeb09B",
+    "topic_files": ["topics.web.51-200.txt"],
+    "topic_reader": "Webxml",
+    "qrels": ["qrels.web.51-200.txt"]
+  },
+  { 
+    "collection": "cw12b13",
+    "collection_formal_name": "ClueWeb12B13",
+    "topic_files": ["topics.web.201-300.txt"],
+    "topic_reader": "Webxml",
+    "qrels": ["qrels.web.201-300.txt"]
+  },
+  { 
+    "collection": "cw12",
+    "collection_formal_name": "ClueWeb12",
+    "topic_files": ["topics.web.201-300.txt"],
+    "topic_reader": "Webxml",
+    "qrels": ["qrels.web.201-300.txt"]
   }
 ]

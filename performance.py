@@ -4,7 +4,6 @@ import json
 import csv
 import ast
 from operator import itemgetter
-import numpy as np
 from inspect import currentframe, getframeinfo
 import argparse
 

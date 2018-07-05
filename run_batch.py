@@ -10,133 +10,75 @@ import argparse
 import json
 import csv
 import inspect
+from multiprocessing import Pool
 
-import ArrayJob
 from search import Search
 from performance import Performances
 
-anserini_root = '/home/1471/usr/Anserini/'
-index_root = '/lustre/scratch/franklyn/reproduce/collections_lucene/'
-output_root = '/lustre/scratch/franklyn/anserini_wrapper/all_results/'
+anserini_root = '~/Anserini/'
+index_root = '/tuna1/indexes/'
+output_root = 'all_results/'
 if not os.path.exists(output_root):
     os.makedirs(output_root)
 
-def gen_batch_framework(para_label, batch_pythonscript_para, all_paras, \
-        quote_command=False, memory='2G', max_task_per_node=50000, num_task_per_node=50):
-
-    para_dir = os.path.join('batch_paras', '%s') % para_label
-    if os.path.exists(para_dir):
-        shutil.rmtree(para_dir)
-    os.makedirs(para_dir)
-
-    batch_script_root = 'bin'
-    if not os.path.exists(batch_script_root):
-        os.makedirs(batch_script_root)
-
+def gen_batch_framework(all_paras, func):
     if len(all_paras) == 0:
         print 'Nothing to run for ' + para_label
         return
-
-    tasks_cnt_per_node = min(num_task_per_node, max_task_per_node) if len(all_paras) > num_task_per_node else 1
-    all_paras = [all_paras[t: t+tasks_cnt_per_node] for t in range(0, len(all_paras), tasks_cnt_per_node)]
-    batch_script_fn = os.path.join(batch_script_root, '%s-0.qs' % (para_label) )
-    batch_para_fn = os.path.join(para_dir, 'para_file_0')
-    with open(batch_para_fn, 'wb') as bf:
-        for i, ele in enumerate(all_paras):
-            para_file_fn = os.path.join(para_dir, 'para_file_%d' % (i+1))
-            bf.write('%s\n' % (para_file_fn))
-            with open(para_file_fn, 'wb') as f:
-                writer = csv.writer(f)
-                if len(ele) == 1:
-                    writer.writerow(ele[0])
-                else:
-                    writer.writerows(ele)
-    command = 'python %s -%s' % (
-        inspect.getfile(inspect.currentframe()), \
-        batch_pythonscript_para
-    )
-    arrayjob_script = ArrayJob.ArrayJob()
-    arrayjob_script.output_batch_qs_file(batch_script_fn, command, quote_command, True, batch_para_fn, len(all_paras), _memory=memory)
-    run_batch_gen_query_command = 'qsub %s' % batch_script_fn
-    subprocess.call( shlex.split(run_batch_gen_query_command) )
-    """
-    for i, ele in enumerate(all_paras):
-        batch_script_fn = os.path.join( batch_script_root, '%s-%d.qs' % (para_label, i) )
-        batch_para_fn = os.path.join(para_dir, 'para_file_%d' % i)
-        with open(batch_para_fn, 'wb') as bf:
-            bf.write('\n'.join(ele))
-        command = 'python %s -%s' % (
-            inspect.getfile(inspect.currentframe()), \
-            batch_pythonscript_para
-        )
-        arrayjob_script = ArrayJob.ArrayJob()
-        arrayjob_script.output_batch_qs_file(batch_script_fn, command, quote_command, True, batch_para_fn, len(ele))
-        run_batch_gen_query_command = 'qsub %s' % batch_script_fn
-        subprocess.call( shlex.split(run_batch_gen_query_command) )
-    """
+    p = Pool(66)
+    p.map(func, all_paras)
 
 def gen_run_query_batch():
     all_paras = []
-    program = os.path.join(anserini_root, 'target/appassembler/bin/SearchWebCollection')
-    collection_suffix = ['_nostopwords']
+    program = os.path.join(anserini_root, 'target/appassembler/bin', 'SearchCollection')
+    suffix = '.pos+docvectors'
     with open('models.json') as mf:
         methods = json.load(mf)
         with open('collections.json') as cf:
             for c in json.load(cf):
                 collection_name = c['collection']
-                for suffix in collection_suffix:
-                    this_output_root = os.path.join(output_root, collection_name+suffix)
-                    if not os.path.exists(this_output_root):
-                        os.makedirs(this_output_root)
-                    index_path = os.path.join(index_root, collection_name+suffix)
-                    model_paras = Search(index_path).gen_run_batch_paras(c['topictype'], methods, this_output_root)
-                    for para in model_paras:
-                        this_para = (
-                            program, 
-                            '-topicreader', c['topic_reader'],
-                            '-topictype', c['topictype'],  
-                            '-index', index_path, 
-                            '-topics', ' '.join([os.path.join(anserini_root, 'src/main/resources/topics-and-qrels/', t) for t in c['topic_files']]),
-                            para[0],
-                            '-output', os.path.join(this_output_root, para[1]),
-                            '-eval', '-evalq', '-qrels', 
-                            ' '.join([os.path.join(anserini_root, 'src/main/resources/topics-and-qrels/', t) for t in c['qrels']]),
-                            '-evalo', os.path.join(this_output_root, para[2]),
-                        )
-                        all_paras.append(this_para)
-    gen_batch_framework('run_anserini_queries', 'b2', all_paras)
+                this_output_root = os.path.join(output_root, collection_name)
+                if not os.path.exists(this_output_root):
+                    os.makedirs(this_output_root)
+                index_path = os.path.join(index_root, 'lucene-index.'+collection_name+suffix)
+                if not os.path.exists(index_path):
+                    index_path += '+rawdocs'
+                model_paras = Search(index_path).gen_run_batch_paras('all', methods, this_output_root)
+                for para in model_paras:
+                    this_para = (
+                        program, 
+                        '-topicreader', c['topic_reader'],
+                        '-index', index_path, 
+                        '-topics', ' '.join([os.path.join(anserini_root, 'src/main/resources/topics-and-qrels/', t) for t in c['topic_files']]),
+                        para[0],
+                        '-output', para[1]
+                    )
+                    all_paras.append(this_para)
+    gen_batch_framework(all_paras, run_query_atom)
 
-def run_query_atom(para_file):
-    with open(para_file) as f:
-        reader = csv.reader(f)
-        for row in reader:
-            subprocess.call(' '.join(row), shell=True)
+def run_query_atom(para):
+    subprocess.call(' '.join(para), shell=True)
 
 def gen_output_performances_batch():
     all_paras = []
-    collection_suffix = ['_nostopwords']
     with open('collections.json') as cf:
         for c in json.load(cf):
             collection_name = c['collection']
-            for suffix in collection_suffix:
-                this_output_root = os.path.join(output_root, collection_name+suffix)
-                if not os.path.exists(this_output_root):
-                    os.makedirs(this_output_root)
-                index_path = os.path.join(index_root, collection_name+suffix)
-                all_paras.extend( Performances(index_path).gen_output_performances_paras(this_output_root) )
+            this_output_root = os.path.join(output_root, collection_name)
+            if not os.path.exists(this_output_root):
+                os.makedirs(this_output_root)
+            index_path = os.path.join(index_root, 'lucene-index.'+collection_name+'.cnt.1')
+            all_paras.extend( Performances(index_path).gen_output_performances_paras(this_output_root) )
 
     #print all_paras
-    gen_batch_framework('gen_performances', 'e2', all_paras)
+    gen_batch_framework(all_paras, output_performances_atom)
 
 
-def output_performances_atom(para_file):
-    with open(para_file) as f:
-        reader = csv.reader(f)
-        for row in reader:
-            index_path = row[0]
-            output_fn = row[1]
-            input_fns = row[2:]
-            Performances(index_path).output_performances(output_fn, input_fns)
+def output_performances_atom(para):
+    index_path = para[0]
+    output_fn = para[1]
+    input_fns = para[2:]
+    Performances(index_path).output_performances(output_fn, input_fns)
 
 def print_optimal_performances(metrics=['map']):
     # with open('g.json') as f:
@@ -145,17 +87,15 @@ def print_optimal_performances(metrics=['map']):
     #     with open('microblog_funcs.json') as f:
     #         methods.extend([m['name'] for m in json.load(f)['methods']])
 
-    collection_suffix = ['_nostopwords']
     with open('collections.json') as cf:
         for c in json.load(cf):
             collection_name = c['collection']
-            for suffix in collection_suffix:
-                this_output_root = os.path.join(output_root, collection_name+suffix)
-                index_path = os.path.join(index_root, collection_name+suffix)
-                print 
-                print collection_name+suffix
-                print '='*30
-                Performances(index_path).print_optimal_performance(this_output_root, metrics)
+            this_output_root = os.path.join(output_root, collection_name)
+            index_path = os.path.join(index_root, 'lucene-index.'+collection_name+'.cnt.1')
+            print 
+            print collection_name
+            print '='*30
+            Performances(index_path).print_optimal_performance(this_output_root, metrics)
 
 def del_method_related_files(method_name):
     folders = ['split_results', 'merged_results', 'evals', 'performances']
